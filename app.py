@@ -86,6 +86,16 @@ st.markdown("""
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+.wa-row {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 div[data-testid="stTextInput"] input {
     background: rgba(255,255,255,0.05) !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
@@ -201,6 +211,7 @@ if st.button("⚡ Generate Leads Now", type="primary", use_container_width=True)
             st.divider()
             df = pd.DataFrame(enriched_leads)
 
+            # Metrics
             st.markdown('<p class="section-title">📈 Results Overview</p>', unsafe_allow_html=True)
             c1, c2, c3, c4 = st.columns(4)
             with c1:
@@ -220,6 +231,39 @@ if st.button("⚡ Generate Leads Now", type="primary", use_container_width=True)
             st.markdown('<p class="section-title">📋 Lead Database</p>', unsafe_allow_html=True)
             st.dataframe(df, use_container_width=True, height=400)
 
+            # WhatsApp Section
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown('<p class="section-title">💬 WhatsApp Outreach</p>', unsafe_allow_html=True)
+            st.markdown('<p class="section-sub">Click to instantly send a personalized WhatsApp message to each lead</p>', unsafe_allow_html=True)
+
+            for lead in enriched_leads:
+                name = lead.get('name', 'N/A')
+                phone = lead.get('phone', 'N/A')
+                message = lead.get('outreach_message', 'Hello! I wanted to connect with you regarding your business.')
+                status_val = lead.get('status', 'N/A')
+                score = lead.get('score', 'N/A')
+
+                if phone != 'N/A':
+                    clean_phone = phone.replace('+', '').replace(' ', '').replace('-', '')
+                    wa_text = "Hi " + name + "! " + message
+                    wa_url = "https://wa.me/" + clean_phone + "?text=" + wa_text.replace(' ', '%20')
+
+                    col_a, col_b, col_c, col_d = st.columns([4, 1, 1, 1])
+                    with col_a:
+                        st.markdown("**" + name + "**  \n" + phone)
+                    with col_b:
+                        if status_val == 'Hot':
+                            st.markdown("🔥 **Hot**")
+                        elif status_val == 'Warm':
+                            st.markdown("⚡ **Warm**")
+                        else:
+                            st.markdown("❄️ **Cold**")
+                    with col_c:
+                        st.markdown("⭐ **" + str(score) + "**/10")
+                    with col_d:
+                        st.link_button("💬 WhatsApp", wa_url)
+
+            # Download Button
             st.markdown("<br>", unsafe_allow_html=True)
             with open(filename, "rb") as f:
                 st.download_button(
