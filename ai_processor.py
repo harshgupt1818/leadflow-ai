@@ -28,7 +28,7 @@ def score_and_enrich_leads(leads):
         except Exception as e:
             print("Error: " + str(e)[:100])
             print("Waiting 60 seconds before retry...")
-            time.sleep(60)
+            time.sleep(15)
     
     print("Adding basic scores manually...")
     for lead in leads:
@@ -46,7 +46,7 @@ def batch_process(leads, batch_size=10):
         all_processed.extend(processed)
         if i + batch_size < len(leads):
             print("Waiting 30 seconds between batches...")
-            time.sleep(30)
+            time.sleep(10)
     return all_processed
 
 if __name__ == "__main__":
